@@ -29,15 +29,21 @@ public class SignUp extends HttpServlet {
     private static final long serialVersionUID = 1L;
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        try {
-            dbSingUp(DBConnection.getConnection(), request, response);
-        } catch (ClassNotFoundException | NoSuchAlgorithmException ex) {
-            Logger.getLogger(SignUp.class.getName()).log(Level.SEVERE, null, ex);
+      if(request.getHeader("Origin") != null) { 
+          System.out.println("Recibi un header");
+            try {
+                dbSingUp(DBConnection.getConnection(), request, response);
+            } catch (ClassNotFoundException | NoSuchAlgorithmException ex) {
+                Logger.getLogger(SignUp.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+      else {
+          System.out.println("Ocurrio un error");
+      }
     }
     
-    private void dbSingUp(Connection connection, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, NoSuchAlgorithmException {
+    private void dbSingUp(Connection connection, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, NoSuchAlgorithmException 
+    {
         //Instanciamos el PropsManager
         System.out.println("Estoy ingresando a dbSignUp");
         JSONObject myjson;
@@ -75,5 +81,12 @@ public class SignUp extends HttpServlet {
             json.put("status", 404).put("url", "html/register.html");
         }
         out.print(json.toString());	
+    }
+    
+    private void setAccessControlHeaders(HttpServletResponse resp) {
+      resp.setHeader("Access-Control-Allow-Origin", "*");
+      resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
+      resp.setHeader("Accept","application/json");
+      resp.setHeader("Content-Type","application/json");
     }
 }
